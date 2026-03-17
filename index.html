@@ -4,95 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scientific Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-zinc-950 text-white flex items-center justify-center min-h-screen font-sans">
-    <div class="flex w-full max-w-7xl h-[92vh] shadow-2xl rounded-3xl overflow-hidden border border-zinc-800">
-        
-        <!-- LEFT: Interactive calculator front -->
-        <div class="flex-1 bg-zinc-900 flex items-center justify-center p-8 relative">
-            <div id="calc-body" class="w-[460px] bg-gradient-to-b from-zinc-200 to-zinc-400 rounded-3xl shadow-[0_40px_80px_-20px_rgb(0,0,0)] p-6 border-8 border-zinc-500">
-                
-                <!-- Branding + Power indicator -->
-                <div class="flex justify-between items-center mb-5 px-2">
-                    <div class="flex items-center gap-3">
-                        <div class="h-3 w-3 bg-red-500 rounded-full shadow-inner"></div>
-                        <h1 class="text-black text-xl font-bold tracking-wide">SCIENTIFIC CALCULATOR</h1>
-                    </div>
-                    <div class="text-xs text-zinc-700">SOLAR + BATTERY</div>
+<body>
+    <div class="container">
+        <!-- LEFT PANEL: Calculator -->
+        <div class="calculator-section">
+            <div class="calculator-box">
+                <div class="calc-header">
+                    <div class="brand-name">CASIO FX-SCIENTIFIC</div>
+                    <div class="solar-text">SOLAR+AUTO</div>
                 </div>
 
-                <!-- LCD Display -->
-                <div id="display" class="bg-[#0a2f23] border-4 border-emerald-950 rounded-2xl p-5 shadow-inner h-40 flex flex-col justify-between font-mono text-right overflow-hidden transition-all">
-                    <div id="expression" class="text-emerald-200 text-2xl h-14 overflow-hidden leading-tight"></div>
-                    <div id="result" class="text-6xl text-white font-light tracking-tighter"></div>
+                <div class="display-container">
+                    <div class="display-expr" id="expression"></div>
+                    <div class="display-result" id="result">0</div>
                 </div>
 
-                <!-- Keyboard - 7 column layout like real fx-991EX -->
-                <div id="keyboard" class="grid grid-cols-7 gap-2.5 mt-7 auto-rows-fr"></div>
+                <div class="keyboard" id="keyboard"></div>
             </div>
         </div>
 
-        <!-- RIGHT: Back reference panel -->
-        <div class="flex-1 bg-zinc-100 text-zinc-900 p-10 flex flex-col">
-            <div class="flex-1 bg-white shadow-inner border-8 border-zinc-400 rounded-3xl p-8 relative overflow-auto">
-                <div class="text-xs font-mono text-zinc-400 absolute top-6 left-6">BACK • QUICK REFERENCE</div>
-                
-                <div class="mt-14 space-y-8 text-sm">
-                    <div>
-                        <div class="font-bold text-lg border-b pb-1">CONSTANTS</div>
-                        <div class="grid grid-cols-2 gap-x-6 gap-y-2 mt-3 text-xs">
-                            <div>π ≈ 3.14159265359</div>
-                            <div>e ≈ 2.71828182846</div>
-                            <div>c = 2.99792458×10⁸ m/s</div>
-                            <div>h = 6.62607015×10⁻³⁴ Js</div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="font-bold text-lg border-b pb-1">CONVERSIONS</div>
-                        <div class="mt-3 space-y-1 text-xs leading-tight">
-                            <div>1 km = 1000 m</div>
-                            <div>1 kg = 1000 g</div>
-                            <div>1 L = 1000 mL</div>
-                            <div>1 inch = 2.54 cm</div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="font-bold text-lg border-b pb-1">FORMULAS</div>
-                        <div class="mt-3 font-mono text-[11px] space-y-2 text-zinc-700">
-                            <div>Quadratic: x = [-b ± √(b²-4ac)]/(2a)</div>
-                            <div>∫ xⁿ dx = xⁿ⁺¹/(n+1) + C</div>
-                            <div>d/dx (sin x) = cos x</div>
-                            <div>det(A), A⁻¹, cross/dot product</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-6 right-6 text-[10px] text-zinc-400">Neutral • 552 Functions</div>
+        <!-- RIGHT PANEL: Reference Guide -->
+        <div class="reference-section">
+            <div class="ref-header">CALCULATOR GUIDE</div>
+            <div class="ref-content">
+                <section class="ref-box">
+                    <h3>BASIC OPERATIONS</h3>
+                    <p>AC = Clear All | DEL = Delete | +, −, ×, ÷ = Arithmetic | % = Percent</p>
+                </section>
+                <section class="ref-box">
+                    <h3>TRIGONOMETRIC</h3>
+                    <p>sin, cos, tan | SHIFT for inverse functions | MODE toggles DEG/RAD</p>
+                </section>
+                <section class="ref-box">
+                    <h3>LOGARITHMIC</h3>
+                    <p>log = Base 10 | ln = Natural | log₂ = Base 2 | SHIFT+log=10ˣ | SHIFT+ln=eˣ</p>
+                </section>
+                <section class="ref-box">
+                    <h3>POWERS & ROOTS</h3>
+                    <p>x² = Square | x³ = Cube | xʸ = Power | √ = Square root | ∛ = Cube root</p>
+                </section>
+                <section class="ref-box">
+                    <h3>ADVANCED</h3>
+                    <p>x! = Factorial | 1/x = Reciprocal | |x| = Absolute Value | sinh, cosh, tanh</p>
+                </section>
+                <section class="ref-box">
+                    <h3>CONSTANTS</h3>
+                    <p>π = Pi (3.14159...) | e = Euler (2.71828...) | Ans = Last result</p>
+                </section>
+                <section class="ref-box">
+                    <h3>KEYBOARD SHORTCUTS</h3>
+                    <p>0-9 = Numbers | Enter = Calculate | Backspace = Delete | Esc = Clear All</p>
+                </section>
+                <section class="ref-box">
+                    <h3>EXAMPLES</h3>
+                    <p>5 + 3 = 8 | sin(90°) = 1 | √16 = 4 | 2³ = 8 | 5! = 120</p>
+                </section>
             </div>
         </div>
     </div>
-
-    <!-- History Sidebar -->
-    <div id="history-sidebar" class="fixed top-0 right-0 w-80 h-full bg-zinc-950 shadow-2xl translate-x-full transition-transform duration-300 flex flex-col z-50">
-        <div class="p-6 border-b flex justify-between items-center bg-zinc-900">
-            <h2 class="font-bold text-lg">HISTORY</h2>
-            <button onclick="toggleHistory()" class="text-4xl leading-none text-zinc-400 hover:text-white">×</button>
-        </div>
-        <div id="history-list" class="flex-1 overflow-auto p-5 space-y-4"></div>
-        <div class="p-5 border-t bg-zinc-900">
-            <button onclick="clearHistory()" class="w-full py-4 bg-red-600 hover:bg-red-700 rounded-2xl text-white font-medium">CLEAR</button>
-        </div>
-    </div>
-
-    <!-- History Button -->
-    <button onclick="toggleHistory()" 
-            class="fixed bottom-10 right-10 bg-emerald-600 hover:bg-emerald-700 w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-3xl transition-all active:scale-95 z-40">
-        📜
-    </button>
 
     <script src="script.js"></script>
 </body>

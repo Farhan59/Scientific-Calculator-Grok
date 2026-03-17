@@ -1,171 +1,275 @@
-let currentExpression = '';
-let history = JSON.parse(localStorage.getItem('calcHistory')) || [];
+let expression = '';
+let angleMode = 'deg';
 let isShift = false;
-let isAlpha = false;
+let lastResult = 0;
 
 const expressionEl = document.getElementById('expression');
-const resultEl     = document.getElementById('result');
-const displayEl    = document.getElementById('display');
-const keyboardEl   = document.getElementById('keyboard');
+const resultEl = document.getElementById('result');
+const keyboardEl = document.getElementById('keyboard');
 
 const buttons = [
     // Row 1
-    {label:'SHIFT',  val:'shift',  cls:'special'},
-    {label:'ALPHA',  val:'alpha',  cls:'alpha'},
-    {label:'MODE',   val:'mode',   cls:'text-xs'},
-    {label:'ON',     val:'on',     cls:'text-xs bg-green-600 text-white'},
-    {label:'MENU',   val:'menu',   cls:'text-xs'},
-    {label:'◄',      val:'left',   cls:'text-2xl'},
-    {label:'►',      val:'right',  cls:'text-2xl'},
+    { label: 'AC', val: 'ac', cls: 'delete' },
+    { label: 'DEL', val: 'del', cls: 'delete' },
+    { label: 'SHIFT', val: 'shift', cls: 'shift-btn' },
+    { label: 'MODE', val: 'mode', cls: 'mode' },
+    { label: '(', val: '(', cls: '' },
+    { label: ')', val: ')', cls: '' },
+    { label: '%', val: '%', cls: 'function' },
 
     // Row 2
-    {label:'sin',    val:'sin',    shift:'sin⁻¹', alpha:'A'},
-    {label:'cos',    val:'cos',    shift:'cos⁻¹', alpha:'B'},
-    {label:'tan',    val:'tan',    shift:'tan⁻¹', alpha:'C'},
-    {label:'x²',     val:'²',      shift:'√'},
-    {label:'log',    val:'log',    shift:'10ˣ'},
-    {label:'ln',     val:'ln',     shift:'eˣ'},
-    {label:'x⁻¹',    val:'⁻¹',     cls:'text-lg'},
+    { label: 'sin', val: 'sin', shift: 'asin', cls: 'function' },
+    { label: 'cos', val: 'cos', shift: 'acos', cls: 'function' },
+    { label: 'tan', val: 'tan', shift: 'atan', cls: 'function' },
+    { label: 'π', val: Math.PI, cls: 'function' },
+    { label: 'e', val: Math.E, cls: 'function' },
+    { label: '÷', val: '/', cls: 'operator' },
+    { label: '×', val: '*', cls: 'operator' },
 
     // Row 3
-    {label:'(',      val:'('},
-    {label:')',      val:')'},
-    {label:'∫dx',    val:'∫',      cls:'text-lg'},
-    {label:'d/dx',   val:"d'",     cls:'text-lg'},
-    {label:'×10ˣ',   val:'×10^',   cls:'text-sm'},
-    {label:'DEL',    val:'del',    cls:'operator text-red-400 font-bold'},
-    {label:'AC',     val:'ac',     cls:'operator text-red-600 font-bold'},
+    { label: 'log', val: 'log', shift: 'exp', cls: 'function' },
+    { label: 'ln', val: 'ln', shift: 'exp', cls: 'function' },
+    { label: 'log₂', val: 'log2', cls: 'function' },
+    { label: 'x²', val: '**2', shift: 'sqrt', cls: 'function' },
+    { label: 'x³', val: '**3', shift: 'cbrt', cls: 'function' },
+    { label: 'xʸ', val: '**', cls: 'function' },
+    { label: '−', val: '-', cls: 'operator' },
 
-    // Row 4 – numbers start
-    {label:'7',      val:'7'},
-    {label:'8',      val:'8'},
-    {label:'9',      val:'9'},
-    {label:'÷',      val:'/',      cls:'operator text-3xl'},
-    {label:'x!',     val:'!',      cls:''},
-    {label:'π',      val:'π'},
-    {label:'Ans',    val:'Ans'},
+    // Row 4
+    { label: '7', val: '7', cls: 'number' },
+    { label: '8', val: '8', cls: 'number' },
+    { label: '9', val: '9', cls: 'number' },
+    { label: 'x!', val: 'fact', cls: 'function' },
+    { label: '1/x', val: 'inv', cls: 'function' },
+    { label: 'Ans', val: 'ans', cls: 'function' },
+    { label: '+', val: '+', cls: 'operator' },
 
     // Row 5
-    {label:'4',      val:'4'},
-    {label:'5',      val:'5'},
-    {label:'6',      val:'6'},
-    {label:'×',      val:'*',      cls:'operator text-3xl'},
-    {label:'□',      val:'matrix', cls:'text-xs'},   // Matrix
-    {label:'VCT',    val:'vector', cls:'text-xs'},
-    {label:'STAT',   val:'stat',   cls:'text-xs'},
+    { label: '4', val: '4', cls: 'number' },
+    { label: '5', val: '5', cls: 'number' },
+    { label: '6', val: '6', cls: 'number' },
+    { label: 'sinh', val: 'sinh', cls: 'function' },
+    { label: 'cosh', val: 'cosh', cls: 'function' },
+    { label: 'tanh', val: 'tanh', cls: 'function' },
+    { label: '=', val: '=', cls: 'equals' },
 
     // Row 6
-    {label:'1',      val:'1'},
-    {label:'2',      val:'2'},
-    {label:'3',      val:'3'},
-    {label:'−',      val:'-',      cls:'operator text-3xl'},
-    {label:'MATRIX', val:'mat',    cls:'text-xs'},
-    {label:'VARIABLE',val:'var',   cls:'text-xs'},
-    {label:'≡',      val:'const',  cls:'text-xs'},
+    { label: '1', val: '1', cls: 'number' },
+    { label: '2', val: '2', cls: 'number' },
+    { label: '3', val: '3', cls: 'number' },
+    { label: 'Rnd', val: 'rnd', cls: 'function' },
+    { label: 'EXP', val: 'E', cls: 'function' },
+    { label: '|x|', val: 'abs', cls: 'function' },
+    { label: 'STO', val: 'sto', cls: 'function' },
 
     // Row 7
-    {label:'0',      val:'0',      cls:'wide'},
-    {label:'.',      val:'.'},
-    {label:'+',      val:'+',      cls:'operator text-3xl'},
-    {label:'=',      val:'=',      cls:'equals wide'}
+    { label: '0', val: '0', cls: 'number' },
+    { label: '.', val: '.', cls: 'number' },
+    { label: '±', val: 'neg', cls: 'function' },
+    { label: '⌊', val: 'floor', cls: 'function' },
+    { label: '⌈', val: 'ceil', cls: 'function' },
+    { label: 'MOD', val: 'mod', cls: 'function' },
+    { label: 'RCL', val: 'rcl', cls: 'function' }
 ];
 
 function createKeyboard() {
     keyboardEl.innerHTML = '';
     buttons.forEach(b => {
         const btn = document.createElement('button');
-        btn.className = `calc-btn ${b.cls || ''}`;
-        btn.innerHTML = b.label;
-        btn.dataset.val   = b.val;
-        if (b.shift) btn.dataset.shift = b.shift;
-        if (b.alpha) btn.dataset.alpha = b.alpha;
-        btn.addEventListener('click', () => handlePress(b, btn));
+        btn.className = `calc-btn ${b.cls}`;
+        btn.textContent = b.label;
+        btn.addEventListener('click', () => handleButton(b));
         keyboardEl.appendChild(btn);
     });
 }
 
-function handlePress(config, el) {
-    const val = isShift && config.shift ? config.shift :
-                isAlpha && config.alpha ? config.alpha : config.val;
+function handleButton(btn) {
+    const val = btn.val;
 
-    if (val === 'shift') { isShift = !isShift; isAlpha = false; el.classList.toggle('!bg-amber-300'); return; }
-    if (val === 'alpha') { isAlpha = !isAlpha; isShift = false; el.classList.toggle('!bg-blue-400'); return; }
+    if (val === 'shift') {
+        isShift = !isShift;
+        updateButtons();
+        return;
+    }
 
-    if (val === 'ac')     { currentExpression = ''; resultEl.textContent = ''; updateDisplay(); return; }
-    if (val === 'del')    { currentExpression = currentExpression.slice(0,-1); updateDisplay(); return; }
-    if (val === 'menu')   { alert('Main Menu: 1 Calculate  2 Statistics  3 Spreadsheet  4 Matrix  5 Vector ...'); return; }
-    if (val === 'mode')   { alert('Angle: Degree / Radian / Gradian\nDisplay: MathI/MathO  etc.'); return; }
-    if (val === '=')      { calculate(); return; }
+    if (val === 'mode') {
+        angleMode = angleMode === 'deg' ? 'rad' : 'deg';
+        updateDisplay();
+        return;
+    }
 
-    let append = val;
-    if (val === '²')       append = '**2';
-    if (val === '√')       append = 'Math.sqrt(';
-    if (val === '10ˣ')     append = '10**(';
-    if (val === 'eˣ')      append = 'Math.exp(';
-    if (['sin','cos','tan','sin⁻¹','cos⁻¹','tan⁻¹','log','ln'].includes(val)) append += '(';
+    if (val === 'ac') {
+        expression = '';
+        isShift = false;
+        updateDisplay();
+        return;
+    }
 
-    currentExpression += append;
+    if (val === 'del') {
+        expression = expression.slice(0, -1);
+        updateDisplay();
+        return;
+    }
+
+    if (val === '=') {
+        calculate();
+        return;
+    }
+
+    // Handle shift functions
+    if (isShift && btn.shift) {
+        handleShiftFunction(btn.shift);
+        isShift = false;
+        updateButtons();
+        return;
+    }
+
+    // Handle special functions
+    if (typeof val === 'number') {
+        expression += val.toString();
+    } else if (val === 'ans') {
+        expression += lastResult;
+    } else if (val === 'rnd') {
+        expression += Math.random();
+    } else if (val === 'sin' || val === 'cos' || val === 'tan') {
+        expression += val + '(';
+    } else if (val === 'sinh' || val === 'cosh' || val === 'tanh') {
+        expression += val + '(';
+    } else if (val === 'log') {
+        expression += 'Math.log10(';
+    } else if (val === 'ln') {
+        expression += 'Math.log(';
+    } else if (val === 'log2') {
+        expression += 'Math.log2(';
+    } else if (val === 'sqrt') {
+        expression += 'Math.sqrt(';
+    } else if (val === 'cbrt') {
+        expression += 'Math.cbrt(';
+    } else if (val === 'abs') {
+        expression += 'Math.abs(';
+    } else if (val === 'floor') {
+        expression += 'Math.floor(';
+    } else if (val === 'ceil') {
+        expression += 'Math.ceil(';
+    } else if (val === 'fact') {
+        expression += 'factorial(';
+    } else if (val === 'inv') {
+        expression += '1/(';
+    } else if (val === 'neg') {
+        expression += '-';
+    } else if (val === 'mod') {
+        expression += '%';
+    } else if (val === 'E') {
+        expression += 'e';
+    } else {
+        expression += val;
+    }
+
+    isShift = false;
     updateDisplay();
-
-    isShift = isAlpha = false;
+    updateButtons();
 }
 
-function updateDisplay() {
-    expressionEl.textContent = currentExpression || '0';
+function handleShiftFunction(fn) {
+    if (fn === 'asin') expression += 'asin(';
+    else if (fn === 'acos') expression += 'acos(';
+    else if (fn === 'atan') expression += 'atan(';
+    else if (fn === 'exp') expression += 'Math.exp(';
+    else if (fn === 'sqrt') expression += 'Math.sqrt(';
+    else if (fn === 'cbrt') expression += 'Math.cbrt(';
+
+    updateDisplay();
+}
+
+function factorial(n) {
+    if (n < 0 || n % 1 !== 0) return NaN;
+    if (n === 0 || n === 1) return 1;
+    return n * factorial(n - 1);
 }
 
 function calculate() {
     try {
-        let expr = currentExpression
-            .replace(/π/g, Math.PI)
-            .replace(/e/g, Math.E)
-            .replace(/\²/g, '**2')
-            .replace(/√/g, 'Math.sqrt')
-            .replace(/log/g, 'Math.log10')
-            .replace(/ln/g, 'Math.log')
-            .replace(/×10\^/g, '*10**');
-
-        let res = eval(expr);
-        resultEl.textContent = Number(res).toPrecision(10).replace(/\.?0+$/, '');
-
-        history.unshift({ expr: currentExpression, res });
-        if (history.length > 20) history.pop();
-        localStorage.setItem('calcHistory', JSON.stringify(history));
-        renderHistory();
-
-        currentExpression = '';
-    } catch {
+        let expr = expression;
+        
+        // Replace custom functions
+        expr = expr.replace(/asin/g, 'Math.asin');
+        expr = expr.replace(/acos/g, 'Math.acos');
+        expr = expr.replace(/atan/g, 'Math.atan');
+        expr = expr.replace(/Math\.sin/g, angleMode === 'deg' ? '(x=>Math.sin(x*Math.PI/180))' : 'Math.sin');
+        expr = expr.replace(/Math\.cos/g, angleMode === 'deg' ? '(x=>Math.cos(x*Math.PI/180))' : 'Math.cos');
+        expr = expr.replace(/Math\.tan/g, angleMode === 'deg' ? '(x=>Math.tan(x*Math.PI/180))' : 'Math.tan');
+        expr = expr.replace(/sin/g, angleMode === 'deg' ? '(x=>Math.sin(x*Math.PI/180))' : 'Math.sin');
+        expr = expr.replace(/cos/g, angleMode === 'deg' ? '(x=>Math.cos(x*Math.PI/180))' : 'Math.cos');
+        expr = expr.replace(/tan/g, angleMode === 'deg' ? '(x=>Math.tan(x*Math.PI/180))' : 'Math.tan');
+        expr = expr.replace(/sinh/g, 'Math.sinh');
+        expr = expr.replace(/cosh/g, 'Math.cosh');
+        expr = expr.replace(/tanh/g, 'Math.tanh');
+        expr = expr.replace(/π/g, Math.PI);
+        expr = expr.replace(/e(?![a-z])/g, Math.E);
+        expr = expr.replace(/factorial/g, 'factorial');
+        
+        lastResult = eval(expr);
+        resultEl.textContent = formatResult(lastResult);
+        expression = '';
+    } catch (e) {
         resultEl.textContent = 'Error';
     }
-    updateDisplay();
 }
 
-function renderHistory() {
-    const list = document.getElementById('history-list');
-    list.innerHTML = '';
-    history.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'bg-zinc-900 p-4 rounded-xl cursor-pointer hover:bg-zinc-800';
-        div.innerHTML = `<div class="text-emerald-300 text-sm break-all">${item.expr}</div><div class="text-2xl mt-1">${item.res}</div>`;
-        div.onclick = () => { currentExpression = item.expr; updateDisplay(); toggleHistory(); };
-        list.appendChild(div);
+function formatResult(num) {
+    if (Math.abs(num) > 1e10 || (Math.abs(num) < 1e-5 && num !== 0)) {
+        return num.toExponential(5);
+    }
+    return Math.round(num * 1e10) / 1e10;
+}
+
+function updateDisplay() {
+    expressionEl.textContent = expression;
+    if (!expression) resultEl.textContent = '0';
+    const mode = angleMode === 'deg' ? 'DEG' : 'RAD';
+    document.title = `Calc - ${mode}`;
+}
+
+function updateButtons() {
+    document.querySelectorAll('.shift-btn').forEach(btn => {
+        btn.classList.toggle('active', isShift);
     });
 }
 
-function toggleHistory() {
-    document.getElementById('history-sidebar').classList.toggle('translate-x-full');
-}
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9' || e.key === '.') {
+        expression += e.key;
+        updateDisplay();
+    } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+        expression += e.key;
+        updateDisplay();
+    } else if (e.key === 'Enter') {
+        calculate();
+    } else if (e.key === 'Backspace') {
+        expression = expression.slice(0, -1);
+        updateDisplay();
+    } else if (e.key === 'Escape') {
+        expression = '';
+        updateDisplay();
+    } else if (e.key === '(') {
+        expression += '(';
+        updateDisplay();
+    } else if (e.key === ')') {
+        expression += ')';
+        updateDisplay();
+    }
+});
 
-function clearHistory() {
-    history = [];
-    localStorage.clear();
-    renderHistory();
-}
+// Result click to copy
+resultEl.addEventListener('click', () => {
+    if (resultEl.textContent !== '0') {
+        navigator.clipboard.writeText(resultEl.textContent);
+        alert('Copied: ' + resultEl.textContent);
+    }
+});
 
-// Init
-window.onload = () => {
-    displayEl.classList.add('powered');
+window.addEventListener('load', () => {
     createKeyboard();
     updateDisplay();
-    renderHistory();
-};
+});

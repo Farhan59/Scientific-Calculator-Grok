@@ -1,40 +1,227 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-.calc-btn {
-    @apply bg-zinc-50 hover:bg-white active:bg-zinc-200 
-           text-zinc-900 font-medium rounded-xl 
-           shadow-[0_5px_10px_rgba(0,0,0,0.35),inset_0_-6px_10px_rgba(0,0,0,0.2)] 
-           border border-zinc-300 transition-all duration-100 active:translate-y-[2px] active:shadow-inner;
-    aspect-ratio: 1 / 1;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* ===== LEFT: CALCULATOR PANEL ===== */
+.calculator-section {
+    flex: 0 0 450px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.calculator-box {
+    background: linear-gradient(to bottom, #1a1a2e, #16213e);
+    border: 3px solid #444;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    max-height: 700px;
+}
+
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #444;
+}
+
+.brand-name {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #0f0;
+}
+
+.solar-text {
+    font-size: 8px;
+    color: #888;
+}
+
+.display-container {
+    background: linear-gradient(to bottom, #001a00, #003300);
+    border: 2px solid #00aa00;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 12px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.display-expr {
+    font-size: 10px;
+    color: #0a0;
+    font-family: 'Courier New', monospace;
+    min-height: 14px;
+    text-align: right;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.display-result {
+    font-size: 24px;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    text-align: right;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.display-result:hover {
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 6px;
+    flex: 1;
+}
+
+.calc-btn {
+    background: linear-gradient(to bottom, #4a5568, #2d3748, #1a202c);
+    border: 2px solid #1a1a1a;
+    border-radius: 3px;
+    color: #e0e0e0;
+    font-size: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.1s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    outline: none;
+}
+
+.calc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
 .calc-btn:active {
-    box-shadow: inset 0 6px 12px rgba(0,0,0,0.45);
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.8), inset 0 2px 4px rgba(0,0,0,0.6);
 }
 
-.calc-btn.special { @apply bg-amber-400 hover:bg-amber-300 text-white font-semibold text-sm; }
-.calc-btn.alpha   { @apply bg-blue-500 hover:bg-blue-400 text-white font-semibold text-sm; }
-.calc-btn.operator { @apply bg-zinc-700 text-white hover:bg-zinc-600; }
-.calc-btn.equals   { @apply bg-emerald-600 hover:bg-emerald-500 text-white text-3xl font-bold col-span-2; }
-.calc-btn.wide     { @apply col-span-2; }
-
-#display.powered {
-    animation: lcdPower 1.4s ease forwards;
+/* Button Types */
+.calc-btn.number {
+    background: linear-gradient(to bottom, #5a6b7f, #3d4b5c, #2a3544);
+    color: #fff;
 }
 
-@keyframes lcdPower {
-    0%   { opacity: 0.2; filter: brightness(0.4); transform: scale(0.98); }
-    100% { opacity: 1;   filter: brightness(1);   transform: scale(1);   }
+.calc-btn.operator {
+    background: linear-gradient(to bottom, #d97706, #b85e0c, #8b4513);
+    color: #fef3c7;
 }
 
-#calc-body {
-    box-shadow: 
-        0 50px 80px -20px rgb(0 0 0 / 65%),
-        inset 0 20px 40px rgba(255,255,255,0.5),
-        inset 0 -20px 40px rgba(0,0,0,0.35);
+.calc-btn.delete {
+    background: linear-gradient(to bottom, #ef4444, #c41e1e, #7f1d1d);
+    color: #fef2f2;
+}
+
+.calc-btn.equals {
+    background: linear-gradient(to bottom, #22c55e, #16a34a, #166534);
+    color: #f0fdf4;
+}
+
+.calc-btn.function {
+    background: linear-gradient(to bottom, #8b5cf6, #7c3aed, #5b21b6);
+    color: #f3e8ff;
+    font-size: 6px;
+}
+
+.calc-btn.mode {
+    background: linear-gradient(to bottom, #3b82f6, #2563eb, #1e3a8a);
+    color: #dbeafe;
+}
+
+.calc-btn.shift-btn {
+    background: linear-gradient(to bottom, #f59e0b, #d97706, #92400e);
+    color: #fef3c7;
+}
+
+.calc-btn.shift-btn.active {
+    background: linear-gradient(to bottom, #fbbf24, #f59e0b, #d97706);
+    box-shadow: 0 0 15px rgba(255, 190, 36, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* ===== RIGHT: REFERENCE PANEL ===== */
+.reference-section {
+    flex: 1;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.ref-header {
+    background: linear-gradient(to right, #4f46e5, #7c3aed);
+    color: white;
+    padding: 15px 20px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.ref-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ref-box {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #4f46e5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ref-box h3 {
+    font-size: 11px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.ref-box p {
+    font-size: 10px;
+    color: #666;
+    line-height: 1.4;
 }
